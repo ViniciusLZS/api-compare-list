@@ -37,6 +37,10 @@ class User {
       return response.status(400).json({ error: 'E-mail is required' });
     }
 
+    if (!password) {
+      return response.status(400).json({ error: 'Password is required' });
+    }
+
     if (email && !isValidEmail(email)) {
       return response.status(400).json({ error: 'Invalid E-mail' });
     }
@@ -46,10 +50,6 @@ class User {
       if (emailExist) {
         return response.status(400).json({ error: 'This e-mail is already in use' });
       }
-    }
-
-    if (!password) {
-      return response.status(400).json({ error: 'Password is required' });
     }
 
     const hashedPassword = await hashPassword(password);
@@ -65,17 +65,73 @@ class User {
   }
 
   async update(request, response) {
-    // const { id } = request.params;
-    // const { name } = request.body;
+    const { id } = request.params;
+    const { name, email, password } = request.body;
 
-    // if (!isValidUUID(id)) {
-    //   return response.status(400).json({ error: 'Invalid user id' });
-    // }
+    if (!isValidUUID(id)) {
+      return response.status(400).json({ error: 'Invalid user id' })
+    }
+
+    if (!name) {
+      return response.status(400).json({ error: 'Name is required' });
+    }
+
+    if (!email) {
+      return response.status(400).json({ error: 'E-mail is required' });
+    }
+
+    if (!password) {
+      return response.status(400).json({ error: 'Password is required' });
+    }
+
+    if (!isValidEmail(email)) {
+      return response.status(400).json({ error: 'Invalid E-mail' });
+    }
+
+    const userExist = await UserRepository.findById(id);
+    console.log("🚀 ~ file: UserController.js:92 ~ User ~ update ~ userExist:", userExist)
+
+    if (!userExist) {
+      return response.status(404).json({ error: 'User not found' });
+    }
 
 
+    const emailExist = await UserRepository.findByEmail(email);
+    console.log("🚀 ~ file: UserController.js:99 ~ User ~ update ~ emailExist:", emailExist)
+
+    if (emailExist && emailExist.name !== userExist.name) {
+      return response.status(400).json({ error: 'This e-mail is already in use' });
+    }
+
+
+    const hashedPassword = await hashPassword(password);
+
+    const user = await UserRepository.update(id, {
+      name,
+      email,
+      password: hashedPassword
+    });
+
+    response.json(user);
   }
 
-  async delete(request, response) { }
+  async delete(request, response) {
+    const { id } = request.params;
+
+    if (!isValidUUID(id)) {
+      return response.status(400).json({ error: 'Invalid user id' });
+    }
+
+    const user = await UserRepository.findById(id);
+
+    if (!user) {
+      return response.status(404).json({ error: 'User not found' });
+    }
+
+    await UserRepository.delete(id);
+
+    response.sendStatus(204);
+  }
 }
 
 module.exports = new User();
