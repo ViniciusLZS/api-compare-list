@@ -1,9 +1,12 @@
+require('dotenv').config();
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const UserRepository = require("../repositories/UserRepository");
 const isValidUUID = require("../utils/isValidUUID");
 const hashPassword = require("../utils/hashPassword");
 const isValidEmail = require("../utils/isValidEmail");
 
-class User {
+class UserController {
   async index(request, response) {
     const user = await UserRepository.findAll();
 
@@ -53,7 +56,6 @@ class User {
     }
 
     const hashedPassword = await hashPassword(password);
-    console.log("🚀 ~ file: UserController.js:56 ~ User ~ store ~ hashedPassword:", hashedPassword);
 
     const user = await UserRepository.create({
       name,
@@ -132,6 +134,45 @@ class User {
 
     response.sendStatus(204);
   }
+
+  async login(request, response) {
+    const { email, password } = request.body;
+
+    if (!email) {
+      return response.status(400).json({ error: 'E-mail is required' });
+    }
+
+    if (!password) {
+      return response.status(400).json({ error: 'Password is required' });
+    }
+
+    if (email && !isValidEmail(email)) {
+      return response.status(400).json({ error: 'Invalid E-mail' });
+    }
+
+    const userExist = await UserRepository.findByEmail(email);
+    if (!userExist) {
+      return response.status(404).json({ error: 'E-mail not found' });
+    }
+
+    const checkPassword = await bcrypt.compare(password, userExist.password);
+    if (!checkPassword) {
+      return response.status(400).json({ error: 'Invalid password' });
+    }
+
+    const secret = process.env.SECRET;
+
+    const token = jwt.sign({
+      id: userExist.id,
+    },
+      secret,
+    )
+
+    const user = await UserRepository.findById(userExist.id);
+    delete user.password;
+
+    response.status(201).json({token, user});
+  }
 }
 
-module.exports = new User();
+module.exports = new UserController();
