@@ -3,12 +3,16 @@ const ListController = require("./app/controllers/ListController");
 const UserController = require("./app/controllers/UserController");
 const ProductController = require("./app/controllers/ProductController");
 const MeasureController = require("./app/controllers/MeasureController");
+const checkToken = require("./app/middlewares/checkToken");
 
 const router = Router();
+router.post("/user", UserController.store);
+router.post('/auth/login', UserController.login);
+
+router.use(checkToken);
 
 router.get("/user", UserController.index);
 router.get("/user/:id", UserController.show);
-router.post("/user", UserController.store);
 router.put("/user/:id", UserController.update);
 router.delete("/user/:id", UserController.delete);
 
