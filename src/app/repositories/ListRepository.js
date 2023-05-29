@@ -1,14 +1,14 @@
 const db = require('../../database');
 
 class ListRepository {
-  async findAll({ id, orderBy = 'ASC' }) {
+  async findAll({ userId, orderBy = 'ASC' }) {
     const direction = orderBy.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
     const rows = db.query(`
       SELECT *
       FROM lists
       WHERE user_id = $1 AND deleted_at IS NULL
       ORDER BY lists.name ${direction}
-    `, [id]);
+    `, [userId]);
 
     return rows;
   }
@@ -33,12 +33,12 @@ class ListRepository {
   return row;
   }
 
-  async create({ name, estimated, user_id }) {
+  async create({ name, estimated, userId }) {
     const [row] = await db.query(`
       INSERT INTO lists(name, estimated, user_id)
       VALUES($1, $2, $3)
       RETURNING *
-    `, [name, estimated, user_id]);
+    `, [name, estimated, userId]);
 
     return row;
   }
