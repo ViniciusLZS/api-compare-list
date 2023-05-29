@@ -3,14 +3,14 @@ const isValidUUID = require("../utils/isValidUUID");
 
 class ListController {
   async index(request, response) {
-    const { id } = request.params;
+    const userId = request.id;
     const { orderBy } = request.query;
 
-    if (id && !isValidUUID(id)) {
+    if (userId && !isValidUUID(userId)) {
       return response.status(400).json({ error: 'Invalid user_id' });
     }
 
-    const list = await ListRepository.findAll({ id, orderBy });
+    const list = await ListRepository.findAll({ userId, orderBy });
 
     if (!list) {
       return response.status(404).json({ error: 'List not found' });
@@ -36,7 +36,8 @@ class ListController {
   }
 
   async store(request, response) {
-    const { name, estimated, user_id } = request.body;
+    const { name, estimated } = request.body;
+    const userId = request.id;
 
     if (!name) {
       return response.status(400).json({ error: 'Name is required' });
@@ -46,20 +47,20 @@ class ListController {
       return response.status(400).json({ error: 'Value is required' });
     }
 
-    if (user_id && !isValidUUID(user_id)) {
+    if (userId && !isValidUUID(userId)) {
       return response.status(400).json({ error: 'Invalid user_id' });
     }
 
-    const userIdExist = await ListRepository.findUserId(user_id);
+    const userIdExist = await ListRepository.findUserId(userId);
 
-    if(!userIdExist) {
-      return response.status(404).json({error: 'User_id not found'});
+    if (!userIdExist) {
+      return response.status(404).json({ error: 'User_id not found' });
     }
 
     const list = await ListRepository.create({
       name,
-      estimated,
-      user_id
+      estimated: Number(estimated),
+      userId
     });
 
     response.status(201).json(list);
@@ -87,8 +88,8 @@ class ListController {
 
     const userIdExist = await ListRepository.findUserId(user_id);
 
-    if(!userIdExist) {
-      return response.status(404).json({error: 'User_id not found'});
+    if (!userIdExist) {
+      return response.status(404).json({ error: 'User_id not found' });
     }
 
     const list = await ListRepository.update(
@@ -104,7 +105,7 @@ class ListController {
   }
 
   async delete(request, response) {
-    const {id} = request.params;
+    const { id } = request.params;
 
     if (!isValidUUID(id)) {
       return response.status(400).json({ error: 'Invalid list id' });
