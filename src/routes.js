@@ -12,11 +12,11 @@ router.post('/auth/login', UserController.login);
 router.use(checkToken);
 
 router.get("/user", UserController.index);
-router.get("/user/:id", UserController.show);
-router.put("/user/:id", UserController.update);
-router.delete("/user/:id", UserController.delete);
+router.get("/auth/user", UserController.show);
+router.put("/auth/user", UserController.update);
+router.delete("/auth/user", UserController.delete);
 
-router.get("/list/user/:id", ListController.index);
+router.get("/list/user", ListController.index);
 router.get("/list/:id", ListController.show);
 router.post("/list", ListController.store);
 router.put("/list/:id", ListController.update);
