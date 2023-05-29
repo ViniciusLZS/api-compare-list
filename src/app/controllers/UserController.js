@@ -14,7 +14,7 @@ class UserController {
   }
 
   async show(request, response) {
-    const { id } = request.params;
+    const id = request.id;
 
     if (!isValidUUID(id)) {
       return response.status(400).json({ error: 'Invalid user id' });
@@ -168,10 +168,10 @@ class UserController {
       secret,
     )
 
-    const user = await UserRepository.findById(userExist.id);
-    delete user.password;
+    // const user = await UserRepository.findById(userExist.id);
+    // delete user.password;
 
-    response.status(201).json({token, user});
+    response.status(201).json(token);
   }
 }
 
