@@ -20,10 +20,10 @@ module.exports = (request, response, next) => {
     response.status(400).json({ error: 'Invalid token' })
   }
 
+  request.id = decoded.id;
+
   if (
-    (request.method === 'POST' && request.path === '/auth/login') ||
-    (request.method === 'POST' && request.path === '/user') ||
-    (request.method === 'GET' && request.path.startsWith('/user'))
+    (request.path !== '*')
   ) {
     return next();
   }
