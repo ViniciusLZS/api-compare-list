@@ -2,13 +2,14 @@ const db = require('../../database');
 
 class ProductRepository {
 
-  async findAll({ id, orderBy = 'ASC' }) {
-    const direction = orderBy.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
-    const rows = db.query(`
-      SELECT *
+  async findAll({ id, orderBy = 'created_at' }) {
+    const direction = orderBy === 'created_at' ? 'created_at' : 'name';
+    const rows = await db.query(`
+      SELECT products.*, measures.name AS measurename
       FROM products
-      WHERE list_id = $1 AND deleted_at IS NULL
-      ORDER BY products.name ${direction}
+      LEFT JOIN measures ON measures.id = products.measure_id
+      WHERE list_id = $1
+      ORDER BY products.${direction} ASC
     `, [id]);
 
     return rows;
