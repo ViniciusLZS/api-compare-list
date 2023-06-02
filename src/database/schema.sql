@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS products (
   name VARCHAR NOT NULL,
   value DOUBLE PRECISION,
   amount INT,
-  measure_id UUID,
+  measure_id UUID NULL,
   list_id UUID,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
