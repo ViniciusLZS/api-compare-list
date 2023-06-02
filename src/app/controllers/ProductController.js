@@ -41,38 +41,34 @@ class ProductController {
   }
 
   async store(request, response) {
-    const { name, value, amount, measure_id, list_id } = request.body;
+    const { name, value, amount, measureId, listId } = request.body;
 
     if (!name) {
       return response.status(400).json({ error: 'Name is required' });
     }
 
-    if (!measure_id) {
-      return response.status(400).json({ error: 'Measure_id is required' });
-    }
-
-    if (!list_id) {
+    if (!listId) {
       return response.status(400).json({ error: 'List_id is required' });
     }
 
-    if (!isValidUUID(measure_id)) {
+    if (measureId && !isValidUUID(measureId)) {
       return response.status(400).json({ error: 'Invalid Measure_id' })
     }
 
-    if (!isValidUUID(list_id)) {
+    if (!isValidUUID(listId)) {
       return response.status(400).json({ error: 'Invalid list_id' })
     }
 
-    if (measure_id) {
-      const measureIdExist = await ProductRepository.findByMeasureId(measure_id);
+    if (measureId) {
+      const measureIdExist = await ProductRepository.findByMeasureId(measureId);
 
       if (!measureIdExist) {
         return response.status(400).json({ error: 'Measure_id not found' })
       }
     }
 
-    if (list_id) {
-      const listIdExist = await ProductRepository.findByListId(list_id);
+    if (listId) {
+      const listIdExist = await ProductRepository.findByListId(listId);
 
       if (!listIdExist) {
         return response.status(400).json({ error: 'List_id not found' })
@@ -81,10 +77,10 @@ class ProductController {
 
     const list = await ProductRepository.create({
       name,
-      value,
-      amount,
-      measure_id,
-      list_id
+      value: Number(value),
+      amount: Number(amount),
+      measure_id: measureId || null,
+      list_id: listId
     })
 
     response.status(201).json(list);
