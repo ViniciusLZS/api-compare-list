@@ -160,7 +160,7 @@ class UserController {
       return response.status(400).json({ error: 'Invalid password' });
     }
 
-    const secret = process.env.SECRET;
+    const secret = process.env.CLIENT_SECRET;
 
     const token = jwt.sign({
       id: userExist.id,
