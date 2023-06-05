@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS products (
   value DOUBLE PRECISION,
   amount INT,
   measure_id UUID NULL,
+  image VARCHAR DEFAULT NULL,
   list_id UUID,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
