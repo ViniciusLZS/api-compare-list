@@ -41,7 +41,7 @@ class ProductController {
   }
 
   async store(request, response) {
-    const { name, value, amount, measureId, listId } = request.body;
+    const { name, value, amount, measureId, image, listId } = request.body;
 
     if (!name) {
       return response.status(400).json({ error: 'Name is required' });
@@ -80,6 +80,7 @@ class ProductController {
       value: Number(value),
       amount: Number(amount),
       measure_id: measureId || null,
+      image: image || null,
       list_id: listId
     })
 

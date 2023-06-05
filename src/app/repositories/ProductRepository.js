@@ -45,12 +45,12 @@ class ProductRepository {
     return row;
   }
 
-  async create({ name, value, amount, measure_id, list_id }) {
+  async create({ name, value, amount, measure_id, image, list_id }) {
     const [row] = await db.query(`
-      INSERT INTO products(name, value, amount, measure_id, list_id)
-      VALUES($1, $2, $3, $4, $5)
+      INSERT INTO products(name, value, amount, measure_id, image, list_id)
+      VALUES($1, $2, $3, $4, $5, $6)
       RETURNING *
-    `, [name, value, amount, measure_id, list_id]);
+    `, [name, value, amount, measure_id, image, list_id]);
 
     return row;
   }
