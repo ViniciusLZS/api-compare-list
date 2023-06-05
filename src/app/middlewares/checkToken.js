@@ -13,20 +13,19 @@ module.exports = (request, response, next) => {
     return response.status(401).json({ error: 'Token denied' });
   }
 
-  const secret = process.env.SECRET;
+  const secret = process.env.CLIENT_SECRET;
 
-  const decoded = jwt.verify(token, secret);
-  if (!decoded) {
-    response.status(400).json({ error: 'Invalid token' })
+  try {
+    const decoded = jwt.verify(token, secret);
+
+    request.id = decoded.id;
+
+    if (request.path !== '*') {
+      return next();
+    }
+
+    return response.status(403).json({ error: 'Access denied' });
+  } catch (error) {
+    return response.status(400).json({ error: 'Invalid token' });
   }
-
-  request.id = decoded.id;
-
-  if (
-    (request.path !== '*')
-  ) {
-    return next();
-  }
-
-  return response.status(403).json({ error: 'Access denied' });
 }
