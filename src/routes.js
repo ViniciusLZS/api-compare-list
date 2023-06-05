@@ -3,6 +3,7 @@ const ListController = require("./app/controllers/ListController");
 const UserController = require("./app/controllers/UserController");
 const ProductController = require("./app/controllers/ProductController");
 const MeasureController = require("./app/controllers/MeasureController");
+const MercadoLivreController = require("./app/controllers/MercadoLivreController");
 const checkToken = require("./app/middlewares/checkToken");
 
 const router = Router();
@@ -33,5 +34,8 @@ router.get("/product/:id", ProductController.show);
 router.post("/product", ProductController.store);
 router.put("/product/:id", ProductController.update);
 router.delete("/product/:id", ProductController.delete);
+
+router.get("/api/categories", MercadoLivreController.categories);
+router.get("/api/products/:categoryId?/:product", MercadoLivreController.products);
 
 module.exports = router;
