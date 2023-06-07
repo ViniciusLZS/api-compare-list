@@ -22,8 +22,6 @@ class MercadoLivreController {
 
   async products(request, response) {
     const { categoryId, product } = request.params;
-    console.log("🚀 ~ file: MercadoLivreController.js:25 ~ MercadoLivreController ~ products ~ categoryId:", categoryId)
-
 
     try {
       if (!product) {

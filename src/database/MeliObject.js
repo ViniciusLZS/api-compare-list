@@ -8,13 +8,11 @@ class MeliObject {
 
   async get(endpoint) {
     const url = `${this.apiBaseUrl}${endpoint}`;
-    console.log("🚀 ~ file: MeliObject.js:10 ~ MeliObject ~ get ~ url:", url)
     const config = {
       headers: {
         Authorization: `Bearer ${this.accessToken}`
       }
     };
-    console.log("🚀 ~ file: MeliObject.js:15 ~ MeliObject ~ get ~ config:", config)
 
     try {
       const response = await fetch(url, config);
