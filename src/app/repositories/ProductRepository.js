@@ -55,16 +55,18 @@ class ProductRepository {
     return row;
   }
 
-  async update(id, { name, value, amount, measure_id, list_id }) {
+  async update(id, { name, value, amount, measure_id, image, list_id }) {
     const [row] = await db.query(`
       UPDATE products
       SET name = $1,
           value = $2,
           amount = $3,
           measure_id = $4,
-          list_id = $5
-      WHERE id = $6 AND deleted_at IS NULL
-    `, [name, value, amount, measure_id, list_id, id]);
+          image = $5,
+          list_id = $6
+      WHERE id = $7 AND deleted_at IS NULL
+      RETURNING *
+    `, [name, value, amount, measure_id, image, list_id, id]);
 
     return row;
   }
