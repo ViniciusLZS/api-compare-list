@@ -7,7 +7,7 @@ class ListRepository {
       SELECT *
       FROM lists
       WHERE user_id = $1 AND deleted_at IS NULL
-      ORDER BY lists.name ${direction}
+      ORDER BY lists.created_at ${direction}
     `, [userId]);
 
     return rows;
