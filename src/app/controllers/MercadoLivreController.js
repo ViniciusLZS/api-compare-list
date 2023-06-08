@@ -7,7 +7,6 @@ class MercadoLivreController {
       const meliObject = new MeliObject(accessToken);
 
       const categories = await meliObject.get('/sites/MLB/categories');
-      console.log("🚀 ~ file: MercadoLivreController.js:12 ~ MercadoLivreController ~ index ~ categories:", categories)
 
       if (categories.length > 0) {
         response.status(200).json(categories);
