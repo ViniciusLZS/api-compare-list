@@ -8,7 +8,7 @@ class ProductRepository {
       SELECT products.*, measures.name AS measurename
       FROM products
       LEFT JOIN measures ON measures.id = products.measure_id
-      WHERE list_id = $1
+      WHERE products.list_id = $1 AND products.deleted_at IS NULL
       ORDER BY products.${direction} ASC
     `, [id]);
 
@@ -75,7 +75,7 @@ class ProductRepository {
     const deleteProduct = await db.query(`
       UPDATE products
       SET deleted_at = NOW()
-      WHERE id = $1;
+      WHERE id = $1 AND deleted_at IS NULL
     `, [id]);
 
     return deleteProduct;
