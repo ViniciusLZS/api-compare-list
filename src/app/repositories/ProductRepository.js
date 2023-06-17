@@ -5,7 +5,7 @@ class ProductRepository {
   async findAll({ id, orderBy = 'created_at' }) {
     const direction = orderBy === 'created_at' ? 'created_at' : 'name';
     const rows = await db.query(`
-      SELECT products.*, measures.name AS measurename
+      SELECT products.*, measures.name AS measure_name
       FROM products
       LEFT JOIN measures ON measures.id = products.measure_id
       WHERE products.list_id = $1 AND products.deleted_at IS NULL
