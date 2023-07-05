@@ -1,6 +1,7 @@
 const { response } = require("express");
 const ProductRepository = require("../repositories/ProductRepository");
 const isValidUUID = require("../utils/isValidUUID");
+const calcTotalList = require("../utils/calcTotalList");
 
 class ProductController {
   async index(request, response) {
@@ -41,7 +42,7 @@ class ProductController {
   }
 
   async store(request, response) {
-    const { name, value, amount, measure_id, image, list_id } = request.body;
+    const { name, value, amount, total, measure_id, image, list_id } = request.body;
 
     if (!name) {
       return response.status(400).json({ error: 'Name is required' });
@@ -67,8 +68,9 @@ class ProductController {
       }
     }
 
+    let listIdExist;
     if (list_id) {
-      const listIdExist = await ProductRepository.findByListId(list_id);
+      listIdExist = await ProductRepository.findByListId(list_id);
 
       if (!listIdExist) {
         return response.status(400).json({ error: 'List_id not found' })
@@ -79,24 +81,40 @@ class ProductController {
       name,
       value: Number(value),
       amount: Number(amount),
+      total: Number(total),
       measure_id: measure_id || null,
       image: image || null,
-      list_id: list_id
+      list_id,
     })
+
+    if (total) {
+      const calcTotal = calcTotalList(Number(total), listIdExist.total)
+
+      await ProductRepository.listUpdate({
+        total: calcTotal,
+        list_id,
+      });
+    }
 
     response.status(201).json(list);
   }
 
   async update(request, response) {
     const { id } = request.params;
-    const { name, value, amount, measure_id, image, list_id } = request.body;
+    const { name, value, amount, total, measure_id, image, list_id } = request.body;
 
     if (id && !isValidUUID(id)) {
       return response.status(400).json({ error: 'Invalid list id' })
     }
 
+    const product = await ProductRepository.findById(id);
+    if (!product) {
+      return response.status(400).json({ error: 'Product_id not found' })
+    }
+
+    let listIdExist;
     if (list_id) {
-      const listIdExist = await ProductRepository.findByListId(list_id);
+      listIdExist = await ProductRepository.findByListId(list_id);
 
       if (!listIdExist) {
         return response.status(400).json({ error: 'List_id not found' })
@@ -109,11 +127,20 @@ class ProductController {
         name,
         value: Number(value),
         amount: Number(amount),
+        total: Number(total),
         measure_id: measure_id || null,
         image: image || null,
         list_id,
       }
     )
+
+    if (product.total !== Number(total)) {
+      const calcTotal = calcTotalList(Number(total), listIdExist.total, product.total)
+      await ProductRepository.listUpdate({
+        total: calcTotal,
+        list_id
+      });
+    }
 
     response.status(201).json(list);
   }
@@ -127,11 +154,19 @@ class ProductController {
 
     const product = await ProductRepository.findById(id);
 
+
     if (!product) {
       return response.status(404).json({ error: 'Product not found' });
     }
 
+
     await ProductRepository.delete(id);
+
+    const list = await ProductRepository.findByListId(product.list_id);
+
+    const calc = list.total - product.total;
+
+    await ProductRepository.listUpdate({ total: calc, list_id: list.id });
 
     response.sendStatus(204);
   }

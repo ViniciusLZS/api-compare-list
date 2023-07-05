@@ -37,6 +37,7 @@ class ListController {
 
   async store(request, response) {
     const { name, estimated } = request.body;
+    console.log("🚀 ~ file: ListController.js:40 ~ ListController ~ store ~ estimated:", estimated)
     const userId = request.id;
 
     if (!name) {

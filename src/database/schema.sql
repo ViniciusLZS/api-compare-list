@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS lists (
   id UUID NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
   name VARCHAR NOT NULL,
-  estimated INT NOT NULL,
+  estimated DOUBLE PRECISION,
   total DOUBLE PRECISION,
   user_id UUID,
   created_at TIMESTAMP DEFAULT NOW(),
@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS products (
   name VARCHAR NOT NULL,
   value DOUBLE PRECISION,
   amount INT,
+  total DOUBLE PRECISION,
   measure_id UUID NULL,
   image VARCHAR DEFAULT NULL,
   list_id UUID,

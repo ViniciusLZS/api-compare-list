@@ -45,28 +45,39 @@ class ProductRepository {
     return row;
   }
 
-  async create({ name, value, amount, measure_id, image, list_id }) {
+  async listUpdate({ total, list_id }) {
     const [row] = await db.query(`
-      INSERT INTO products(name, value, amount, measure_id, image, list_id)
-      VALUES($1, $2, $3, $4, $5, $6)
-      RETURNING *
-    `, [name, value, amount, measure_id, image, list_id]);
+      UPDATE lists
+      SET total = $1
+      WHERE id = $2 AND deleted_at IS NULL
+    `, [total, list_id]);
 
     return row;
   }
 
-  async update(id, { name, value, amount, measure_id, image, list_id }) {
+  async create({ name, value, amount, total, measure_id, image, list_id }) {
+    const [row] = await db.query(`
+      INSERT INTO products(name, value, amount, total, measure_id, image, list_id)
+      VALUES($1, $2, $3, $4, $5, $6, $7)
+      RETURNING *
+    `, [name, value, amount, total, measure_id, image, list_id]);
+
+    return row;
+  }
+
+  async update(id, { name, value, amount, total, measure_id, image, list_id }) {
     const [row] = await db.query(`
       UPDATE products
       SET name = $1,
           value = $2,
           amount = $3,
-          measure_id = $4,
-          image = $5,
-          list_id = $6
-      WHERE id = $7 AND deleted_at IS NULL
+          total = $4,
+          measure_id = $5,
+          image = $6,
+          list_id = $7
+      WHERE id = $8 AND deleted_at IS NULL
       RETURNING *
-    `, [name, value, amount, measure_id, image, list_id, id]);
+    `, [name, value, amount, total, measure_id, image, list_id, id]);
 
     return row;
   }
