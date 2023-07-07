@@ -48,6 +48,7 @@ class ListRepository {
       UPDATE lists
       SET name = $1, estimated = $2, user_id = $3
       WHERE id = $4 AND deleted_at IS NULL
+      RETURNING *
     `, [name, estimated, user_id, id]);
 
     return row;
