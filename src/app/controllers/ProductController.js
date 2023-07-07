@@ -121,7 +121,7 @@ class ProductController {
       }
     }
 
-    const list = await ProductRepository.update(
+    const products = await ProductRepository.update(
       id,
       {
         name,
@@ -142,7 +142,7 @@ class ProductController {
       });
     }
 
-    response.status(201).json(list);
+    response.status(201).json(products);
   }
 
   async delete(request, response) {
