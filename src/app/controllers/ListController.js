@@ -37,7 +37,6 @@ class ListController {
 
   async store(request, response) {
     const { name, estimated } = request.body;
-    console.log("🚀 ~ file: ListController.js:40 ~ ListController ~ store ~ estimated:", estimated)
     const userId = request.id;
 
     if (!name) {
@@ -69,7 +68,8 @@ class ListController {
 
   async update(request, response) {
     const { id } = request.params;
-    const { name, estimated, user_id } = request.body;
+    const { name, estimated } = request.body;
+    const user_id = request.id;
 
     if (id && !isValidUUID(id)) {
       return response.status(400).json({ error: 'Invalid list id' })
@@ -97,12 +97,12 @@ class ListController {
       id,
       {
         name,
-        estimated,
+        estimated: Number(estimated),
         user_id
       }
     );
 
-    response.json(list);
+    response.status(201).json(list);
   }
 
   async delete(request, response) {
