@@ -168,8 +168,50 @@ class UserController {
       secret,
     )
 
-    // const user = await UserRepository.findById(userExist.id);
-    // delete user.password;
+    response.status(201).json(token);
+  }
+
+  async loginWithGoogle(request, response) {
+    const { email, name, sub } = request.body;
+
+    if (!email) {
+      return response.status(400).json({ error: 'E-mail is required' });
+    }
+
+    if (email && !isValidEmail(email)) {
+      return response.status(400).json({ error: 'Invalid E-mail' });
+    }
+
+    if (!name) {
+      return response.status(400).json({ error: 'Name is required' });
+    }
+
+    if (!sub) {
+      return response.status(400).json({ error: 'Sub is required' });
+    }
+
+    let userExist = await UserRepository.findByEmail(email);
+
+    if (!userExist) {
+      userExist = await UserRepository.create({
+        name,
+        email,
+        password: sub,
+      });
+    }
+
+    if (userExist.password !== sub) {
+      return response.status(400).json({ error: 'Sub invalid' });
+    }
+
+    const secret = process.env.CLIENT_SECRET;
+
+    const token = jwt.sign({
+      id: userExist.id,
+    },
+      secret,
+    )
+
 
     response.status(201).json(token);
   }

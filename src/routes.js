@@ -9,6 +9,7 @@ const checkToken = require("./app/middlewares/checkToken");
 const router = Router();
 router.post("/user", UserController.store);
 router.post('/auth/login', UserController.login);
+router.post('/auth/google', UserController.loginWithGoogle);
 
 router.use(checkToken);
 
