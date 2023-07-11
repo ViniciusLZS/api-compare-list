@@ -17,9 +17,10 @@ class ProductRepository {
 
   async findById(id) {
     const [row] = await db.query(`
-      SELECT *
+      SELECT products.*, measures.name AS measure_name
       FROM products
-      WHERE id = $1 AND deleted_at IS NULL
+      LEFT JOIN measures ON measures.id = products.measure_id
+      WHERE products.id = $1 AND products.deleted_at IS NULL
     `, [id]);
 
     return row;
