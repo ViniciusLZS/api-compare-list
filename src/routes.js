@@ -23,6 +23,7 @@ router.get("/list/:id", ListController.show);
 router.post("/list", ListController.store);
 router.put("/list/:id", ListController.update);
 router.delete("/list/:id", ListController.delete);
+router.get("/list/copy/:id", ListController.copy);
 
 router.get("/measure", MeasureController.index);
 router.get("/measure/:id", MeasureController.show);

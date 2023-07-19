@@ -1,4 +1,5 @@
 const ListRepository = require("../repositories/ListRepository");
+const ProductRepository = require("../repositories/ProductRepository");
 const isValidUUID = require("../utils/isValidUUID");
 
 class ListController {
@@ -87,6 +88,12 @@ class ListController {
       return response.status(400).json({ error: 'Invalid user_id' });
     }
 
+    const listExist = await ListRepository.findById(id);
+
+    if (!listExist) {
+      return response.status(404).json({ error: 'List not found' });
+    }
+
     const userIdExist = await ListRepository.findUserId(user_id);
 
     if (!userIdExist) {
@@ -121,6 +128,55 @@ class ListController {
     await ListRepository.delete(id);
 
     response.sendStatus(204);
+  }
+
+  async copy(request, response) {
+    const userId = request.id;
+    const { id } = request.params;
+
+    if (userId && !isValidUUID(userId)) {
+      return response.status(400).json({ error: 'Invalid user_id' });
+    }
+
+    if (id && !isValidUUID(id)) {
+      return response.status(400).json({ error: 'Invalid list id' })
+    }
+
+    const userIdExist = await ListRepository.findUserId(userId);
+
+    if (!userIdExist) {
+      return response.status(404).json({ error: 'User_id not found' });
+    }
+
+    const listExist = await ListRepository.findById(id);
+
+    if (!listExist) {
+      return response.status(404).json({ error: 'List not found' });
+    }
+
+    const createdList = await ListRepository.create({
+      name: 'Copia',
+      estimated: listExist.estimated,
+      userId
+    });
+
+    const products = await ProductRepository.findAll({ id });
+
+    if (products) {
+      products.forEach(async (product) => {
+        await ProductRepository.create({
+          name: product.name,
+          value:0,
+          amount: product.amount,
+          total: 0,
+          measure_id: product.measure_id || null,
+          image: product.image || null,
+          list_id: createdList.id,
+        })
+      });
+    }
+
+    response.status(201).json(createdList);
   }
 }
 
