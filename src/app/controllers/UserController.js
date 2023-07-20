@@ -58,6 +58,7 @@ class UserController {
     const hashedPassword = await hashPassword(password);
 
     const user = await UserRepository.create({
+      photo: '',
       name,
       email,
       password: hashedPassword
@@ -91,7 +92,6 @@ class UserController {
     }
 
     const userExist = await UserRepository.findById(id);
-    console.log("🚀 ~ file: UserController.js:92 ~ User ~ update ~ userExist:", userExist)
 
     if (!userExist) {
       return response.status(404).json({ error: 'User not found' });
@@ -112,6 +112,31 @@ class UserController {
       name,
       email,
       password: hashedPassword
+    });
+
+    response.json(user);
+  }
+
+  async updatePhoto(request, response) {
+    const id = request.id;
+    const { photo } = request.body;
+
+    if (!photo && typeof (photo) === 'string') {
+      return response.status(400).json({ error: 'Photo is required' })
+    }
+
+    if (!isValidUUID(id)) {
+      return response.status(400).json({ error: 'Invalid user id' })
+    }
+
+    const userExist = await UserRepository.findById(id);
+    if (!userExist) {
+      return response.status(404).json({ error: 'User not found' });
+    }
+
+
+    const user = await UserRepository.updatePhoto(id, {
+      photo,
     });
 
     response.json(user);
@@ -172,7 +197,7 @@ class UserController {
   }
 
   async loginWithGoogle(request, response) {
-    const { email, name, sub } = request.body;
+    const { photo, email, name, sub } = request.body;
 
     if (!email) {
       return response.status(400).json({ error: 'E-mail is required' });
@@ -194,6 +219,7 @@ class UserController {
 
     if (!userExist) {
       userExist = await UserRepository.create({
+        photo: photo || '',
         name,
         email,
         password: sub,

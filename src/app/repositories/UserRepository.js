@@ -30,12 +30,12 @@ class UserRepository {
     return row;
   }
 
-  async create({ name, email, password }) {
+  async create({ photo, name, email, password }) {
     const [row] = await db.query(`
-    INSERT INTO users(name, email, password)
-    VALUES($1, $2, $3)
+    INSERT INTO users(photo, name, email, password)
+    VALUES($1, $2, $3, $4)
     RETURNING *
-    `, [name, email, password]);
+    `, [photo, name, email, password]);
 
     return row;
   }
@@ -46,6 +46,17 @@ class UserRepository {
       SET name = $1, email = $2, password = $3
       WHERE id = $4 AND deleted_at IS NULL
     `, [name, email, password, id]);
+
+    return row;
+  }
+
+  async updatePhoto(id, { photo }) {
+    const [row] = await db.query(`
+      UPDATE users
+      SET photo = $1
+      WHERE id = $2 AND deleted_at IS NULL
+      RETURNING *
+    `, [photo, id]);
 
     return row;
   }
