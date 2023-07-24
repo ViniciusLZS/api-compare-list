@@ -26,6 +26,8 @@ class UserController {
       return response.status(404).json({ error: 'User not found' });
     }
 
+    delete user.password;
+
     response.json(user);
   }
 
@@ -104,6 +106,48 @@ class UserController {
       name,
       email,
     });
+
+    response.json(user);
+  }
+
+  async updateDataSecurity(request, response) {
+    const id = request.id;
+    const { password, newPassword } = request.body;
+
+    if (!isValidUUID(id)) {
+      return response.status(400).json({ error: 'Invalid user id' })
+    }
+
+    if (!password) {
+      return response.status(400).json({ error: 'Password is required' });
+    }
+
+    if (!newPassword) {
+      return response.status(400).json({ error: 'New Password is required' });
+    }
+
+    const userExist = await UserRepository.findById(id);
+
+    if (!userExist) {
+      return response.status(404).json({ error: 'User not found' });
+    }
+
+    const checkPassword = await bcrypt.compare(password, userExist.password);
+    if (!checkPassword) {
+      return response.status(400).json({ error: 'Invalid password' });
+    }
+
+    const checkNewPassword = await bcrypt.compare(newPassword, userExist.password);
+    if (checkNewPassword) {
+      return response.status(400).json({ error: 'The new password is the same as the current one' });
+    }
+
+    const hashedPassword = await hashPassword(newPassword);
+
+    const user = await UserRepository.updateDataSecurity(
+      id, { newPassword: hashedPassword }
+    );
+    console.log("🚀 ~ file: UserController.js:152 ~ UserController ~ updateDataSecurity ~ user:", user)
 
     response.json(user);
   }

@@ -51,6 +51,17 @@ class UserRepository {
     return row;
   }
 
+  async updateDataSecurity(id, { newPassword }) {
+    const [row] = await db.query(`
+      UPDATE users
+      SET password = $1
+      WHERE id = $2 AND deleted_at IS NULL
+      RETURNING *
+    `, [newPassword, id]);
+
+    return row;
+  }
+
   async updatePhoto(id, { photo }) {
     const [row] = await db.query(`
       UPDATE users
