@@ -15,7 +15,7 @@ router.use(checkToken);
 
 router.get("/user", UserController.index);
 router.get("/auth/user", UserController.show);
-router.put("/auth/user", UserController.update);
+router.put("/user/update/data", UserController.updateData);
 router.put("/user/update/photo", UserController.updatePhoto);
 router.delete("/auth/user", UserController.delete);
 

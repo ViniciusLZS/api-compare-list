@@ -67,9 +67,9 @@ class UserController {
     response.status(201).json(user);
   }
 
-  async update(request, response) {
-    const { id } = request.params;
-    const { name, email, password } = request.body;
+  async updateData(request, response) {
+    const id = request.id;
+    const { name, email } = request.body;
 
     if (!isValidUUID(id)) {
       return response.status(400).json({ error: 'Invalid user id' })
@@ -81,10 +81,6 @@ class UserController {
 
     if (!email) {
       return response.status(400).json({ error: 'E-mail is required' });
-    }
-
-    if (!password) {
-      return response.status(400).json({ error: 'Password is required' });
     }
 
     if (!isValidEmail(email)) {
@@ -99,19 +95,14 @@ class UserController {
 
 
     const emailExist = await UserRepository.findByEmail(email);
-    console.log("🚀 ~ file: UserController.js:99 ~ User ~ update ~ emailExist:", emailExist)
 
     if (emailExist && emailExist.name !== userExist.name) {
       return response.status(400).json({ error: 'This e-mail is already in use' });
     }
 
-
-    const hashedPassword = await hashPassword(password);
-
     const user = await UserRepository.update(id, {
       name,
       email,
-      password: hashedPassword
     });
 
     response.json(user);

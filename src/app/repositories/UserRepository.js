@@ -40,12 +40,13 @@ class UserRepository {
     return row;
   }
 
-  async update(id, { name, email, password }) {
+  async update(id, { name, email }) {
     const [row] = await db.query(`
       UPDATE users
-      SET name = $1, email = $2, password = $3
-      WHERE id = $4 AND deleted_at IS NULL
-    `, [name, email, password, id]);
+      SET name = $1, email = $2
+      WHERE id = $3 AND deleted_at IS NULL
+      RETURNING *
+    `, [name, email, id]);
 
     return row;
   }
