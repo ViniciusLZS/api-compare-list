@@ -147,7 +147,6 @@ class UserController {
     const user = await UserRepository.updateDataSecurity(
       id, { newPassword: hashedPassword }
     );
-    console.log("🚀 ~ file: UserController.js:152 ~ UserController ~ updateDataSecurity ~ user:", user)
 
     response.json(user);
   }
