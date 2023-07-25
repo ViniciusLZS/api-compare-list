@@ -5,6 +5,7 @@ const UserRepository = require("../repositories/UserRepository");
 const isValidUUID = require("../utils/isValidUUID");
 const hashPassword = require("../utils/hashPassword");
 const isValidEmail = require("../utils/isValidEmail");
+const passwordConfirmation = require("../utils/passwordConfirmation");
 
 class UserController {
   async index(request, response) {
@@ -46,16 +47,20 @@ class UserController {
       return response.status(400).json({ error: 'Password is required' });
     }
 
-    if (email && !isValidEmail(email)) {
+    if (!passwordConfirmation(password)) {
+      return response.status(400).json({ error: 'Invalid password' });
+    }
+
+    if (!isValidEmail(email)) {
       return response.status(400).json({ error: 'Invalid E-mail' });
     }
 
-    if (email) {
-      const emailExist = await UserRepository.findByEmail(email);
-      if (emailExist) {
-        return response.status(400).json({ error: 'This e-mail is already in use' });
-      }
+
+    const emailExist = await UserRepository.findByEmail(email);
+    if (emailExist) {
+      return response.status(400).json({ error: 'This e-mail is already in use' });
     }
+
 
     const hashedPassword = await hashPassword(password);
 
@@ -124,6 +129,10 @@ class UserController {
 
     if (!newPassword) {
       return response.status(400).json({ error: 'New Password is required' });
+    }
+
+    if (!passwordConfirmation(newPassword)) {
+      return response.status(400).json({ error: 'Invalid new password' });
     }
 
     const userExist = await UserRepository.findById(id);
