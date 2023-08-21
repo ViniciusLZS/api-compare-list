@@ -1,11 +1,11 @@
 const { Client } = require('pg');
-
+const DATABASE_URL = process.env.DATABASE_URL;
 const client = new Client({
-  host: 'localhost',
+  host: DATABASE_URL,
   port: 5432,
   user: 'root',
   password: 'root',
-  database: 'comparelist',
+  database: 'compare_list',
 });
 
 client.connect();
