@@ -10,9 +10,6 @@ const config = {
   host: params.hostname,
   port: params.port,
   database: params.pathname.split('/')[1],
-  ssl: {
-    rejectUnauthorized: false, // Certificado SSL (opcional, dependendo das configurações do seu banco de dados)
-  },
 };
 
 const client = new Client(config);

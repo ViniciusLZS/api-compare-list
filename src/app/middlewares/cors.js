@@ -1,5 +1,6 @@
 module.exports = (request, response, next) => {
-  const allowedOrigins = ['http://localhost:3000', 'http://192.168.18.7:3000'];
+  const originURL = String(process.env.ORIGIN_URL)
+  const allowedOrigins = [originURL];
   const origin = request.headers.origin;
 
   if (allowedOrigins.includes(origin)) {
