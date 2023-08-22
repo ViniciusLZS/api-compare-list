@@ -10,6 +10,7 @@ module.exports = (request, response, next) => {
   // response.setHeader('Access-Control-Allow-Methods', '*');
   // response.setHeader('Access-Control-Allow-Headers', '*');
   // response.setHeader('Access-Control-Max-Age', '10');
+  response.setHeader('Access-Control-Allow-Credentials', true)
   response.setHeader('Access-Control-Allow-Origin', 'https://compare-list.vercel.app');
   response.setHeader('Access-Control-Allow-Methods', 'POST, GET, HEAD');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
